@@ -1,0 +1,18 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+
+&write_xinitrc;
+system("startx");
+print `clear`;
+system("sudo pass1.pl");
+exec "marv-menu";
+
+# Write lightweight manager configuration
+sub write_xinitrc {
+    my $HOME = $ENV{'HOME'};
+    open my $xinitrc, '>', "$HOME/.xinitrc" || die "Unable to open $HOME/.xinitrc for output";
+    print $xinitrc <<HERE;
+exec startfluxbox
+HERE
+}

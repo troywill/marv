@@ -1,0 +1,8 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+
+print "1. Start Chromium in lightweight environment\n";
+print "2. Connect to a wireless network\n";
+print "(h)alt\n";
+
