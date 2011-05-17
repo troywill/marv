@@ -19,6 +19,7 @@ sub connect_to_wireless {
 }
 
 sub marv_menu {
+    print `clear`;
     exec '/usr/local/bin/marv-menu';
 }
 
