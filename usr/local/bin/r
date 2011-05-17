@@ -1,0 +1,18 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+my $sleep = 0;
+my $SUDO = '/usr/bin/sudo';
+my $REBOOT = '/sbin/shutdown -r now';
+
+open my $logfile, '>>', "$ENV{HOME}/log/marv.log" or warn "Unable to open logfile for output: $!";
+print $logfile time, ' Reboot at ', `date`;
+close $logfile;
+
+&do_system_command( "sleep $sleep && $SUDO $REBOOT" );
+
+sub do_system_command {
+    my $command = shift;
+    print "=> $command\n";
+    system $command;
+}
