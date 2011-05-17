@@ -3,6 +3,10 @@ use warnings;
 use strict;
 chomp(my $tty = `tty`);
 exit unless ( $tty eq "/dev/tty1" );
+open my $LOG, '>>', "$ENV{'HOME'}/log/marv.log" or warn "Unable to open log file: $!";
+print $LOG time, ' start at ', `date`, "\n";
+close $LOG;
+
 &rails;
 &detect_wireless;
 &connect_to_wireless;
