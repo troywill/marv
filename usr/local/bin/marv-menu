@@ -1,8 +1,15 @@
 #!/usr/bin/env perl
 use warnings;
 use strict;
+use Term::ANSIColor;
 
-print "1. Start Chromium in lightweight environment\n";
-print "2. Connect to a wireless network\n";
-print "(h)alt\n";
+pretty_print( '1', ' Start Chromium in lightweight environment' );
+pretty_print( '2', ' Connect to a wireless network' );
+pretty_print( 'h', ' alt (turn off computer)' );
+pretty_print( 'r', ' eboot computer' );
 
+	      
+sub pretty_print {
+    my ( $key, $text ) = @_;
+    print '['; print color 'bold blue'; print $key; print color 'reset'; print "]$text\n";
+}

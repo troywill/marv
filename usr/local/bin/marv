@@ -1,22 +1,22 @@
 #!/usr/bin/env perl
 use warnings;
 use strict;
-
 chomp(my $tty = `tty`);
-
 exit unless ( $tty eq "/dev/tty1" );
-
-# &wireless;
-
-&connect_to_wireless;
-
-sub connect_to_wireless {
-    system("/etc/rc.d/asus-networking-perl");
-}
-
 &rails;
 &detect_wireless;
+&connect_to_wireless;
 &marv_menu;
+exit;
+
+sub connect_to_wireless {
+    # Connect to Claremont office if router is detected
+    # Cell 01 - Address: 00:13:10:8D:40:1E
+    my $claremont = '00:13:10:8D:40:1E';
+    system("sudo ip link set wlan0 up");
+    chomp( my $network_check = `sudo iwlist wlan0 scanning | grep $claremont` );
+    system("/etc/rc.d/asus-networking-perl") if $network_check =~ /$claremont/;
+}
 
 sub marv_menu {
     exec '/usr/local/bin/marv-menu';
