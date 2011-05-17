@@ -1,6 +1,8 @@
 #!/usr/bin/env perl
 use warnings;
 use strict;
+my $verbose = 1;
+
 chomp(my $tty = `tty`);
 exit unless ( $tty eq "/dev/tty1" );
 open my $LOG, '>>', "$ENV{'HOME'}/log/marv.log" or warn "Unable to open log file: $!";
@@ -17,9 +19,21 @@ sub connect_to_wireless {
     # Connect to Claremont office if router is detected
     # Cell 01 - Address: 00:13:10:8D:40:1E
     my $claremont = '00:13:10:8D:40:1E';
+    my $stanford = '00:22:6B:A2:59:EF';
     system("sudo ip link set wlan0 up");
-    chomp( my $network_check = `sudo iwlist wlan0 scanning | grep $claremont` );
-    system("/etc/rc.d/asus-networking-perl") if $network_check =~ /$claremont/;
+    # check for claremont and stanford
+    open(SCANNING, "sudo iwlist wlan0 scanning 2>&1 |")
+	|| die "can't fork: $!";
+    while (<SCANNING>) {
+	if ( /$claremont/ ) {
+	    system("/etc/rc.d/asus-networking-perl");
+	    last;
+	} elsif ( /$stanford/ ) {
+	    system("marv-wireless");
+	    last;
+	}
+    }
+    close SCANNING || die "bad scan: $! $?";
 }
 
 sub marv_menu {
@@ -39,7 +53,6 @@ sub rails {
 }
 
 # system("startx");
-
 
 sub wireless {
     my $command = "wpa_supplicant -Dwext -iwlan0 -c/etc/wpa_supplicant.conf";
