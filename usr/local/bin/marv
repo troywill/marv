@@ -2,6 +2,7 @@
 use warnings;
 use strict;
 my $verbose = 1;
+my $SLEEP = 1;
 
 chomp(my $tty = `tty`);
 exit unless ( $tty eq "/dev/tty1" );
@@ -21,6 +22,7 @@ sub connect_to_wireless {
     my $claremont = '00:13:10:8D:40:1E';
     my $stanford = '00:22:6B:A2:59:EF';
     system("sudo ip link set wlan0 up");
+    sleep $SLEEP;
     # check for claremont and stanford
     open(SCANNING, "sudo iwlist wlan0 scanning 2>&1 |")
 	|| die "can't fork: $!";
@@ -37,7 +39,6 @@ sub connect_to_wireless {
 }
 
 sub marv_menu {
-    print `clear`;
     exec '/usr/local/bin/marv-menu';
 }
 
