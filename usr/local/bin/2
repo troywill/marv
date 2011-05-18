@@ -1,0 +1,6 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+
+system("sudo ip link set wlan0 up");
+system("sudo pass1.pl");
