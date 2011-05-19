@@ -51,18 +51,30 @@ sub connect_to_wireless {
     system("sudo ip link set wlan0 up");
     sleep $SLEEP;
     # check for claremont and stanford
+    my @scanlines;
     open(SCANNING, "sudo iwlist wlan0 scanning 2>&1 |")
 	|| die "can't fork: $!";
     while (<SCANNING>) {
+	push @scanlines, $_;
+    }
+    close SCANNING || die "bad scan: $! $?";
+
+    foreach (@scanlines) {
 	if ( /$claremont/ ) {
 	    system("/etc/rc.d/asus-networking-perl 2>/dev/null");
+	    print "DEBUG L65: next statement is last\n";
 	    last;
 	} elsif ( /$stanford/ ) {
 	    system("marv-wireless");
 	    last;
+	} elsif ( /Wayport_Access/ ) {
+	    sleep 1;
+	    system("sudo iwconfig wlan0 essid 'Wayport_Access'");
+	    system("sudo dhcpcd wlan0");
+	    last;
 	}
     }
-    close SCANNING || die "bad scan: $! $?";
+    print "DEBUG L77: let's close SCANNING\n";
 }
 
 sub marv_menu {
