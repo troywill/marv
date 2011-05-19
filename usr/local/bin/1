@@ -4,9 +4,6 @@ use strict;
 
 &write_xinitrc;
 system("startx");
-print `clear`;
-system("sudo pass1.pl");
-exec "marv-menu";
 
 # Write lightweight manager configuration
 sub write_xinitrc {

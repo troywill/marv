@@ -21,14 +21,13 @@ exit;
 
 sub wait_for_interface {
     my ( $operstate, $carrier ) = &get_interface_state;
-    system("sudo ip link set wlan0 up 2>/dev/null");
     while (($carrier != 0) && ($carrier != 1)) {
+	system("sudo ip link set wlan0 up 2>/dev/null");
 	( $operstate, $carrier ) = &get_interface_state;
-#	system("sudo ip link set wlan0 up 2>/dev/null");
     }
     while (( $operstate ne 'up') && ($operstate ne 'down')) {
+	system("sudo ip link set wlan0 up 2>/dev/null");
 	( $operstate, $carrier ) = &get_interface_state;
-#	system("sudo ip link set wlan0 up 2>/dev/null");
     }
 }
 
