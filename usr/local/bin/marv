@@ -4,6 +4,7 @@ use strict;
 my $verbose = 1;
 my $SLEEP = 1;
 
+&get_interface_state;
 chomp(my $tty = `tty`);
 exit unless ( $tty eq "/dev/tty1" );
 open my $LOG, '>>', "$ENV{'HOME'}/log/marv.log" or warn "Unable to open log file: $!";
@@ -11,10 +12,37 @@ print $LOG time, ' start at ', `date`, "\n";
 close $LOG;
 
 &rails;
+&wait_for_interface;
 &detect_wireless;
 &connect_to_wireless;
+&get_interface_state;
 &marv_menu;
 exit;
+
+sub wait_for_interface {
+    my ( $operstate, $carrier ) = &get_interface_state;
+    system("sudo ip link set wlan0 up 2>/dev/null");
+    while (($carrier != 0) && ($carrier != 1)) {
+	( $operstate, $carrier ) = &get_interface_state;
+#	system("sudo ip link set wlan0 up 2>/dev/null");
+    }
+    while (( $operstate ne 'up') && ($operstate ne 'down')) {
+	( $operstate, $carrier ) = &get_interface_state;
+#	system("sudo ip link set wlan0 up 2>/dev/null");
+    }
+}
+
+sub get_interface_state {
+    chomp(my $operstate = `cat /sys/class/net/wlan0/operstate 2>/dev/null`);
+    chomp(my $carrier = `cat /sys/class/net/wlan0/carrier 2>/dev/null`);
+    $carrier = -1 if $carrier eq "";
+    print "operstate = $operstate, carrier = $carrier\n" if $verbose;
+    return ( $operstate, $carrier );
+}
+
+sub detect_wireless {
+    system("sudo pass1.pl");
+}
 
 sub connect_to_wireless {
     # Connect to Claremont office if router is detected
@@ -28,7 +56,7 @@ sub connect_to_wireless {
 	|| die "can't fork: $!";
     while (<SCANNING>) {
 	if ( /$claremont/ ) {
-	    system("/etc/rc.d/asus-networking-perl");
+	    system("/etc/rc.d/asus-networking-perl 2>/dev/null");
 	    last;
 	} elsif ( /$stanford/ ) {
 	    system("marv-wireless");
@@ -39,12 +67,7 @@ sub connect_to_wireless {
 }
 
 sub marv_menu {
-    exec '/usr/local/bin/marv-menu';
-}
-
-sub detect_wireless {
-    system("sudo ip link set wlan0 up");
-    system("sudo pass1.pl");
+    exec '/usr/local/bin/menu-marv';
 }
 
 sub rails {
@@ -60,7 +83,7 @@ sub wireless {
     print "=> sudo $command\n";
     system("sudo $command > /dev/null &");
     sleep 1;
-    $command = "dhcpcd wlan0";
+    $command = "dhcpcd wlan0 2>/dev/null &";
     print "=> sudo $command\n";
     system("sudo $command 2> /dev/null &");
 }
