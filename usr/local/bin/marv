@@ -4,19 +4,21 @@ use strict;
 my $verbose = 1;
 my $SLEEP = 1;
 
-&get_interface_state;
 chomp(my $tty = `tty`);
 exit unless ( $tty eq "/dev/tty1" );
 open my $LOG, '>>', "$ENV{'HOME'}/log/marv.log" or warn "Unable to open log file: $!";
 print $LOG time, ' start at ', `date`, "\n";
 close $LOG;
 
+&get_interface_state;
 &rails;
 &wait_for_interface;
 &detect_wireless;
 &connect_to_wireless;
 &get_interface_state;
+system("wget http://marvscars.com/foobar");
 &marv_menu;
+
 exit;
 
 sub wait_for_interface {
