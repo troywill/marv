@@ -14,7 +14,7 @@ close $LOG;
 &rails;
 &wait_for_interface;
 &detect_wireless;
-# &connect_to_wireless;
+&connect_to_wireless;
 &get_interface_state;
 system("wget http://marvscars.com/foobar");
 &marv_menu;
@@ -42,7 +42,7 @@ sub get_interface_state {
 }
 
 sub detect_wireless {
-    system("sudo pass1.pl");
+    system("sudo perl-wireless-connect");
 }
 
 sub connect_to_wireless {
