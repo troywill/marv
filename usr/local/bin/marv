@@ -10,74 +10,13 @@ open my $LOG, '>>', "$ENV{'HOME'}/log/marv.log" or warn "Unable to open log file
 print $LOG time, ' start at ', `date`, "\n";
 close $LOG;
 
-&get_interface_state;
 &rails;
-&wait_for_interface;
-# &detect_wireless;
-# &connect_to_wireless;
-system("perl-wireless-connect");
-&get_interface_state;
-system("wget http://marvscars.com/foobar");
+
+&connect_wireless();
 &marv_menu;
 
-exit;
-
-sub wait_for_interface {
-    my ( $operstate, $carrier ) = &get_interface_state;
-    while (($carrier != 0) && ($carrier != 1)) {
-	system("sudo ip link set wlan0 up 2>/dev/null");
-	( $operstate, $carrier ) = &get_interface_state;
-    }
-    while (( $operstate ne 'up') && ($operstate ne 'down')) {
-	system("sudo ip link set wlan0 up 2>/dev/null");
-	( $operstate, $carrier ) = &get_interface_state;
-    }
-}
-
-sub get_interface_state {
-    chomp(my $operstate = `cat /sys/class/net/wlan0/operstate 2>/dev/null`);
-    chomp(my $carrier = `cat /sys/class/net/wlan0/carrier 2>/dev/null`);
-    $carrier = -1 if $carrier eq "";
-    print "operstate = $operstate, carrier = $carrier\n" if $verbose;
-    return ( $operstate, $carrier );
-}
-
-sub detect_wireless {
-    system("sudo perl-wireless-connect");
-}
-
-sub connect_to_wireless {
-    # Connect to Claremont office if router is detected
-    # Cell 01 - Address: 00:13:10:8D:40:1E
-    my $claremont = '00:13:10:8D:40:1E';
-    my $stanford = '00:22:6B:A2:59:EF';
-    system("sudo ip link set wlan0 up");
-    sleep $SLEEP;
-    # check for claremont and stanford
-    my @scanlines;
-    open(SCANNING, "sudo iwlist wlan0 scanning 2>&1 |")
-	|| die "can't fork: $!";
-    while (<SCANNING>) {
-	push @scanlines, $_;
-    }
-    close SCANNING || die "bad scan: $! $?";
-
-    foreach (@scanlines) {
-	if ( /$claremont/ ) {
-	    system("/etc/rc.d/asus-networking-perl 2>/dev/null");
-	    print "DEBUG L65: next statement is last\n";
-	    last;
-	} elsif ( /$stanford/ ) {
-	    system("marv-wireless");
-	    last;
-	} elsif ( /Wayport_Access/ ) {
-	    sleep 1;
-	    system("sudo iwconfig wlan0 essid 'Wayport_Access'");
-	    system("sudo dhcpcd wlan0");
-	    last;
-	}
-    }
-    print "DEBUG L77: let's close SCANNING\n";
+sub connect_wireless {
+    system("perl-wireless-connect");
 }
 
 sub marv_menu {
@@ -86,18 +25,6 @@ sub marv_menu {
 
 sub rails {
     chdir "/home/marv/rails/marv";
-    system("sh server.sh 2>/dev/null&");
-    print "Starting weight loss application ...\n";
-}
-
-# system("startx");
-
-sub wireless {
-    my $command = "wpa_supplicant -Dwext -iwlan0 -c/etc/wpa_supplicant.conf";
-    print "=> sudo $command\n";
-    system("sudo $command > /dev/null &");
-    sleep 1;
-    $command = "dhcpcd wlan0 2>/dev/null &";
-    print "=> sudo $command\n";
-    system("sudo $command 2> /dev/null &");
+    system("sh server.sh 2>/dev/null &");
+    print "==> Starting weight loss application...\n";
 }
