@@ -20,7 +20,7 @@ sub connect_wireless {
 }
 
 sub marv_menu {
-    exec '/usr/local/bin/menu-marv';
+    exec '/usr/local/bin/perl-menu';
 }
 
 sub rails {
