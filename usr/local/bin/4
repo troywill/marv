@@ -6,7 +6,7 @@ HEADER_FILE='_temp.header'
 COOKIE_FILE='cookie_file'
 READINGS_URL="${BASE_URL}/readings"
 
-echo -n "Weight? "
+echo -n "Hello Marv. Weight? "
 read WEIGHT
 
 authenticate () {
