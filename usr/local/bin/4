@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE_URL='http://192.168.1.4:3000'
+BASE_URL='http://usahealthscience.com:3000'
 CONTROLLER='welcome/login'
 HEADER_FILE='_temp.header'
 COOKIE_FILE='cookie_file'
