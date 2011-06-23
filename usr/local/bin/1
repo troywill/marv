@@ -10,6 +10,6 @@ sub write_xinitrc {
     my $HOME = $ENV{'HOME'};
     open my $xinitrc, '>', "$HOME/.xinitrc" || die "Unable to open $HOME/.xinitrc for output";
     print $xinitrc <<HERE;
-exec startfluxbox
+exec startkde
 HERE
 }
