@@ -10,21 +10,8 @@ open my $LOG, '>>', "$ENV{'HOME'}/log/marv.log" or warn "Unable to open log file
 print $LOG time, ' start at ', `date`, "\n";
 close $LOG;
 
-&rails;
-
-&connect_wireless();
 &marv_menu;
-
-sub connect_wireless {
-    system("perl-wireless-connect");
-}
 
 sub marv_menu {
     exec '/usr/local/bin/perl-menu';
-}
-
-sub rails {
-    chdir "/home/marv/rails/marv";
-    system("sh server.sh 2>/dev/null &");
-    print "==> Starting weight loss application...\n";
 }
