@@ -3,4 +3,4 @@ use warnings;
 use strict;
 
 system("sudo ip link set wlan0 up");
-system("perl-net-scan-wireless");
+system("sudo perl-net-scan-wireless");
